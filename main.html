@@ -7,29 +7,83 @@
 </head>
 <body>
 
-  <div class="wrapper">
-    <video class="flex" width="765" height="430" src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
-    <div class="speed">
-      <div class="speed-bar">1×</div>
+  <div class="player">
+    <video class="player_video" width="765" height="430" src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
+    <div class="player_controls">
+      <div class="progress">
+		  <div class="progress_filled"></div>
+	  </div>
+
+		<button class="player__button toggle" title="Toggle Play"></button>
+		<button class="player__button rewind" data-skip="-10"></button>
+		<button class="player__button forward" data-skip="25"></button>
+
+		<input type="range" name="volume" class="volume" min="0" max="1" step="0.05" value="1">
+		<input type="range" name="playbackRate" class="playbackSpeed" min="0.5" max="2" step="0.1" value="1">	
     </div>
   </div>
 
 <script  src="./script.js">
   //Your code goes here
-	const video = document.querySelector('video');
-  const speedBar = document.querySelector('.speed-bar');
-  const speedWrapper = document.querySelector('.speed');
+	let player=document.qurySelector(".player");
+	let video=player.qurySelector(".player_video");
+	let toggle=player.qurySelector(".toggle");
+	let rewind=player.qurySelector(".rewind");
+	let forward=player.qurySelector(".forward");
+	let volume=player.qurySelector(".volume");
+	let speed=player.qurySelector(".playbackSpeed");
+	let progress=player.qurySelector(".progress");
+	let progressFilled=player.qurySelector(".progress_filled");
 
-  speedWrapper.addEventListener('mousemove', function (e) {
-    const y = e.pageY - this.offsetTop;
-    const percent = y / this.offsetHeight;
-    const min = 0.5;
-    const max = 2;
-    const playbackRate = percent * (max - min) + min;
-    speedBar.textContent = playbackRate.toFixed(2) + '×';
-    speedBar.style.height = Math.round(percent * 100) + '%';
-    video.playbackRate = playbackRate;
-  });
+	function togglePlay(){
+		if (video.paused) {
+			video.play();
+		} else {
+			video.pause();
+		}
+	}
+
+	function updateBtn(){
+		if (video.paused) {
+			toggle.textContent="►";
+		} else {
+			toggle.textContent="❚❚";
+		}
+	}
+
+	function skip() {
+      video.currentTime+=parseFloat(this.dataset.skip);
+    }
+
+    function handleRangeUpdate() {
+      video[this.name]=this.value;
+    }
+
+	 function handleProgress() {
+      let percent=(video.currentTime / video.duration) * 100;
+      progressFilled.style.width=`${percent}%`;
+    }
+
+    function scrub(e) {
+      let scrubTime =(e.offsetX / progress.offsetWidth) * video.duration;
+      video.currentTime=scrubTime;
+    }
+	 video.addEventListener('click', togglePlay);
+    video.addEventListener('play', updateBtn);
+    video.addEventListener('pause', updateBtn);
+    video.addEventListener('timeupdate', handleProgress);
+    toggle.addEventListener('click', togglePlay);
+	 rewind.addEventListener('click', skip);
+    forward.addEventListener('click', skip);
+
+    volume.addEventListener('input', handleRangeUpdate);
+    speed.addEventListener('input', handleRangeUpdate);
+
+    let mousedown = false;
+    progress.addEventListener('click', scrub);
+    progress.addEventListener('mousemove', (e) => mousedown && scrub(e));
+    progress.addEventListener('mousedown', () => mousedown = true);
+    progress.addEventListener('mouseup', () => mousedown = false);
 </script>
 </body>
 </html>
