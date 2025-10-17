@@ -8,7 +8,7 @@
 <body>
 
   <div class="wrapper">
-    <video class="flex" width="765" height="430" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" controls></video>
+    <video class="flex" width="765" height="430" src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
     <div class="speed">
       <div class="speed-bar">1×</div>
     </div>
@@ -16,6 +16,20 @@
 
 <script  src="./script.js">
   //Your code goes here
+	const video = document.querySelector('video');
+  const speedBar = document.querySelector('.speed-bar');
+  const speedWrapper = document.querySelector('.speed');
+
+  speedWrapper.addEventListener('mousemove', function (e) {
+    const y = e.pageY - this.offsetTop;
+    const percent = y / this.offsetHeight;
+    const min = 0.5;
+    const max = 2;
+    const playbackRate = percent * (max - min) + min;
+    speedBar.textContent = playbackRate.toFixed(2) + '×';
+    speedBar.style.height = Math.round(percent * 100) + '%';
+    video.playbackRate = playbackRate;
+  });
 </script>
 </body>
 </html>
